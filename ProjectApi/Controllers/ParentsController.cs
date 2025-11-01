@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -82,6 +81,62 @@ namespace ProjectApi.Controllers
                 return NotFound();
             }
 
+            return NoContent();
+        }
+
+        // ========== ОПЕРАЦИИ С ДЕТЬМИ РОДИТЕЛЯ ==========
+
+        [HttpPost("{parentId}/kids")]
+        public async Task<ActionResult<Kid>> CreateKidForParent(int parentId, Kid kid)
+        {
+            try
+            {
+                var createdKid = await _parentService.CreateKidForParentAsync(parentId, kid);
+                return CreatedAtAction(
+                    nameof(KidsController.GetKid),
+                    "Kids",                        
+                    new { id = createdKid.Id },  
+                    createdKid       
+        );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        // Получить детей родителя
+        [HttpGet("{parentId}/kids")]
+        public async Task<ActionResult<List<Kid>>> GetParentKids(int parentId)
+        {
+            var kids = await _parentService.GetParentKidsAsync(parentId);
+            return Ok(kids);
+        }
+
+        // Привязать существующего ребенка
+        [HttpPost("{parentId}/kids/{kidId}")]
+        public async Task<IActionResult> AddKidToParent(int parentId, string kidId)
+        {
+            var result = await _parentService.AddKidToParentAsync(parentId, kidId);
+            if (!result) return NotFound();
+            return Ok();
+        }
+
+        // Отвязать ребенка
+        [HttpDelete("{parentId}/kids/{kidId}")]
+        public async Task<IActionResult> RemoveKidFromParent(int parentId, string kidId)
+        {
+            var result = await _parentService.RemoveKidFromParentAsync(parentId, kidId);
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
+        // Удалить ребенка (только у этого родителя)
+        [HttpDelete("{parentId}/kids/{kidId}/delete")]
+        public async Task<IActionResult> DeleteKidFromParent(int parentId, string kidId)
+        {
+            var result = await _parentService.RemoveKidFromParentAsync(parentId, kidId);
+            if (!result) return NotFound();
             return NoContent();
         }
 
