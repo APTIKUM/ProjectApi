@@ -1,11 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using ProjectApi.Data;
+using ProjectApi.Services.Abstractions;
+using ProjectApi.Services.Implementations;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<AppDbContext>(
+    options => options.UseSqlite("Data Source=project.db"));
+
+
+builder.Services.AddScoped<IParentService, ParentService>();
 
 var app = builder.Build();
 
@@ -17,9 +26,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    dbContext.Database.Migrate();
+}
+
+Console.WriteLine("Database created successfully!");
 
 app.Run();
