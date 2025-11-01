@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjectApi.Data;
 using ProjectApi.Services.Abstractions;
 using ProjectApi.Services.Implementations;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlite("Data Source=project.db"));
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
 
 builder.Services.AddScoped<IParentService, ParentService>();
+builder.Services.AddScoped<IKidService, KidService>();
 
 var app = builder.Build();
 
@@ -24,7 +32,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+    
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

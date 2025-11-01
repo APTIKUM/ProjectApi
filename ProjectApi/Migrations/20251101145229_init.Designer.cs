@@ -11,14 +11,54 @@ using ProjectApi.Data;
 namespace ProjectApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251101112236_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251101145229_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.21");
+
+            modelBuilder.Entity("KidParent", b =>
+                {
+                    b.Property<string>("KidsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ParentsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("KidsId", "ParentsId");
+
+                    b.HasIndex("ParentsId");
+
+                    b.ToTable("ParentsKids", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectApi.Models.Kid", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(5)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GameBalance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Kids");
+                });
 
             modelBuilder.Entity("ProjectApi.Models.Parent", b =>
                 {
@@ -56,6 +96,21 @@ namespace ProjectApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Parents");
+                });
+
+            modelBuilder.Entity("KidParent", b =>
+                {
+                    b.HasOne("ProjectApi.Models.Kid", null)
+                        .WithMany()
+                        .HasForeignKey("KidsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectApi.Models.Parent", null)
+                        .WithMany()
+                        .HasForeignKey("ParentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
