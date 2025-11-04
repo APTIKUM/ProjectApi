@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ProjectApi.Models
 {
@@ -24,6 +25,7 @@ namespace ProjectApi.Models
         [StringLength(255)]
         public string? AvatarUrl { get; set; }
 
-        public ICollection<Kid> Kids { get; set; } = new List<Kid>();
+        [JsonIgnore]
+        public List<Kid> Kids { get; set; } = new List<Kid>();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ProjectApi.Models
 {
@@ -16,8 +17,11 @@ namespace ProjectApi.Models
         [StringLength(255)]
         public string? AvatarUrl { get; set; }
 
-        // Навигационное свойство для связи многие-ко-многим
-        public ICollection<Parent> Parents { get; set; } = new List<Parent>();
+        [JsonIgnore]
+        public List<Parent> Parents { get; set; } = new();
+
+        [JsonIgnore]
+        public List<KidTask> Tasks { get; set; } = new();
     }
 
 }
