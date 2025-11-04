@@ -43,6 +43,33 @@ namespace ProjectApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "KidTasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    KidId = table.Column<string>(type: "TEXT", maxLength: 5, nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Price = table.Column<int>(type: "INTEGER", nullable: false),
+                    TimeStart = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    TimeEnd = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    IsCompleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsRepetitive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    RepeatDaysJson = table.Column<string>(type: "TEXT", nullable: false, defaultValue: "[]")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KidTasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KidTasks_Kids_KidId",
+                        column: x => x.KidId,
+                        principalTable: "Kids",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ParentsKids",
                 columns: table => new
                 {
@@ -67,6 +94,11 @@ namespace ProjectApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_KidTasks_KidId",
+                table: "KidTasks",
+                column: "KidId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Parents_Email",
                 table: "Parents",
                 column: "Email",
@@ -81,6 +113,9 @@ namespace ProjectApi.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "KidTasks");
+
             migrationBuilder.DropTable(
                 name: "ParentsKids");
 

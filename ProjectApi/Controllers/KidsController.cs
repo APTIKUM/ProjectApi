@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
+using ProjectApi.Services.Implementations;
 
 namespace ProjectApi.Controllers
 {
@@ -44,6 +45,24 @@ namespace ProjectApi.Controllers
             var result = await _kidService.DeleteKidAsync(id);
             if (!result) return NotFound();
             return NoContent();
+        }
+
+        [HttpPost("{parentId}")]
+        public async Task<ActionResult<Kid>> CreateKid(int parentId, Kid kid)
+        {
+            try
+            {
+                var createdKid = await _kidService.CreateKidAsync(parentId, kid);
+                return CreatedAtAction(
+                    nameof(GetKid),
+                    new { id = createdKid.Id },
+                    createdKid
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

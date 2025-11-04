@@ -11,7 +11,7 @@ using ProjectApi.Data;
 namespace ProjectApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251102135629_init")]
+    [Migration("20251104173337_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -58,6 +58,55 @@ namespace ProjectApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Kids");
+                });
+
+            modelBuilder.Entity("ProjectApi.Models.KidTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsRepetitive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("KidId")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RepeatDaysJson")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("[]");
+
+                    b.Property<DateTime?>("TimeEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TimeStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KidId");
+
+                    b.ToTable("KidTasks");
                 });
 
             modelBuilder.Entity("ProjectApi.Models.Parent", b =>
@@ -111,6 +160,22 @@ namespace ProjectApi.Migrations
                         .HasForeignKey("ParentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectApi.Models.KidTask", b =>
+                {
+                    b.HasOne("ProjectApi.Models.Kid", "Kid")
+                        .WithMany("Tasks")
+                        .HasForeignKey("KidId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kid");
+                });
+
+            modelBuilder.Entity("ProjectApi.Models.Kid", b =>
+                {
+                    b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
         }

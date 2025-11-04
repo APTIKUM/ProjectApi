@@ -8,6 +8,8 @@ namespace ProjectApi.Data
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Kid> Kids { get; set; }
 
+        public DbSet<KidTask> KidTasks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Parent>(entity =>
@@ -34,6 +36,10 @@ namespace ProjectApi.Data
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
+            modelBuilder.Entity<Parent>()
+                .HasMany(p => p.Kids)
+                .WithMany(k => k.Parents)
+                .UsingEntity(j => j.ToTable("ParentsKids"));
 
             modelBuilder.Entity<Kid>(entity =>
             {
@@ -53,11 +59,34 @@ namespace ProjectApi.Data
                     .HasDefaultValue(0);
             });
 
+            
 
-            modelBuilder.Entity<Parent>()
-                .HasMany(p => p.Kids)
-                .WithMany(k => k.Parents)
-                .UsingEntity(j => j.ToTable("ParentsKids"));
+            modelBuilder.Entity<KidTask>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Price)
+                    .IsRequired();
+
+                entity.Property(e => e.TimeStart)
+                    .IsRequired();
+
+                entity.Property(e => e.RepeatDaysJson)
+                    .HasDefaultValue("[]");
+
+                entity.HasOne(kt => kt.Kid)
+                    .WithMany(k => k.Tasks)
+                    .HasForeignKey(kt => kt.KidId)
+                    .OnDelete(DeleteBehavior.Cascade); 
+            });
         }
     }
 }
