@@ -72,11 +72,15 @@ namespace ProjectApi.Services.Implementations
 
         public async Task<IEnumerable<Kid>> GetParentKidsAsync(int parentId)
         {
-            var parent = await _context.Parents
-                .Include(p => p.Kids)
-                .FirstOrDefaultAsync(p => p.Id == parentId);
+            return await _context.Kids
+                .Where(k => k.Parents.Any(p => p.Id == parentId))
+                .ToListAsync();
 
-            return parent?.Kids ?? new List<Kid>();
+            //var parent = await _context.Parents
+            //    .Include(p => p.Kids)
+            //    .FirstOrDefaultAsync(p => p.Id == parentId);
+
+            //return parent?.Kids ?? new List<Kid>();
         }
 
         public async Task<bool> AddKidToParentAsync(int parentId, string kidId)
@@ -117,10 +121,8 @@ namespace ProjectApi.Services.Implementations
         public async Task<Kid> CreateKidForParentAsync(int parentId, Kid kid)
         {
             var parent = await _context.Parents
-                .FirstOrDefaultAsync(p => p.Id == parentId);
-
-            if (parent == null)
-                throw new Exception("Родитель не найден");
+                .FirstOrDefaultAsync(p => p.Id == parentId) 
+                ?? throw new Exception("Родитель не найден");
 
             kid.Id = IdGenerator.GenerateKidId();
 

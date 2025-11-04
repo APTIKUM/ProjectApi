@@ -4,7 +4,7 @@ using ProjectApi.Services.Abstractions;
 
 namespace ProjectApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/parents")]
     [ApiController]
     public class ParentsController : ControllerBase
     {
@@ -15,89 +15,75 @@ namespace ProjectApi.Controllers
             _parentService = parentService;
         }
 
+        // ========== ОСНОВНЫЕ ОПЕРАЦИИ С РОДИТЕЛЯМИ ==========
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Parent>>> GetParents()
+        public async Task<ActionResult<IEnumerable<Parent>>> Get()
         {
             var parents = await _parentService.GetAllParentsAsync();
             return Ok(parents);
         }
 
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<Parent>> GetParent(int id)
+        public async Task<ActionResult<Parent>> Get(int id)
         {
             var parent = await _parentService.GetParentByIdAsync(id);
-
-            if (parent == null)
-            {
-                return NotFound();
-            }
-
+            if (parent == null) return NotFound();
             return Ok(parent);
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<Parent>> CreateParent(Parent parent)
+        [HttpPost]
+        public async Task<ActionResult<Parent>> Create(Parent parent)
         {
             var createdParent = await _parentService.CreateParentAsync(parent);
-
-            return CreatedAtAction(nameof(GetParent), new { id = createdParent.Id }, createdParent);
+            return CreatedAtAction(nameof(Get), new { id = createdParent.Id }, createdParent);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<Parent>> Login(string email, string password)
+        public async Task<ActionResult<Parent>> Login(LoginRequest request)
         {
-            var parent = await _parentService.LoginAsync(email, password);
-
-            if (parent == null)
-            {
-                return Unauthorized();
-            }
-
+            var parent = await _parentService.LoginAsync(request.Email, request.Password);
+            if (parent == null) return Unauthorized();
             return Ok(parent);
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateParent(int id, Parent parent)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, Parent parent)
         {
             var success = await _parentService.UpdateParentAsync(id, parent);
-
-            if (!success)
-            {
-                return NotFound();
-            }
-
+            if (!success) return NotFound();
             return NoContent();
         }
 
-
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteParent(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
             var success = await _parentService.DeleteParentAsync(id);
-
-            if (!success)
-            {
-                return NotFound();
-            }
-
+            if (!success) return NotFound();
             return NoContent();
         }
 
         // ========== ОПЕРАЦИИ С ДЕТЬМИ РОДИТЕЛЯ ==========
 
-        [HttpPost("{parentId}/create-kid")]
-        public async Task<ActionResult<Kid>> CreateKidForParent(int parentId, Kid kid)
+        [HttpGet("{parentId}/kids")]
+        public async Task<ActionResult<List<Kid>>> GetKids(int parentId)
+        {
+            var kids = await _parentService.GetParentKidsAsync(parentId);
+            return Ok(kids);
+        }
+
+        [HttpPost("{parentId}/kids")]
+        public async Task<ActionResult<Kid>> CreateKid(int parentId, Kid kid)
         {
             try
             {
                 var createdKid = await _parentService.CreateKidForParentAsync(parentId, kid);
                 return CreatedAtAction(
                     nameof(KidsController.GetKid),
-                    "Kids",                        
-                    new { id = createdKid.Id },  
-                    createdKid       
-        );
+                    "Kids",
+                    new { id = createdKid.Id },
+                    createdKid
+                );
             }
             catch (Exception ex)
             {
@@ -105,31 +91,26 @@ namespace ProjectApi.Controllers
             }
         }
 
-        // Получить детей родителя
-        [HttpGet("{parentId}/kids")]
-        public async Task<ActionResult<List<Kid>>> GetParentKids(int parentId)
-        {
-            var kids = await _parentService.GetParentKidsAsync(parentId);
-            return Ok(kids);
-        }
-
-        // Привязать существующего ребенка
-        [HttpPost("{parentId}/add-kid/{kidId}")]
-        public async Task<IActionResult> AddKidToParent(int parentId, string kidId)
+        [HttpPut("{parentId}/kids/{kidId}")]
+        public async Task<IActionResult> AddKid(int parentId, string kidId)
         {
             var result = await _parentService.AddKidToParentAsync(parentId, kidId);
             if (!result) return NotFound();
             return Ok();
         }
 
-        // Отвязать ребенка
-        [HttpDelete("{parentId}/remove-kid/{kidId}")]
-        public async Task<IActionResult> RemoveKidFromParent(int parentId, string kidId)
+        [HttpDelete("{parentId}/kids/{kidId}")]
+        public async Task<IActionResult> RemoveKid(int parentId, string kidId)
         {
             var result = await _parentService.RemoveKidFromParentAsync(parentId, kidId);
             if (!result) return NotFound();
             return NoContent();
         }
+    }
 
+    public class LoginRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }
