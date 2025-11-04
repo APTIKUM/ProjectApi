@@ -62,10 +62,27 @@ namespace ProjectApi.Controllers
         }
 
 
-        [HttpPost("{id}/kids")]
-        public async Task<IActionResult> CreateKid(int id)
+        [HttpGet("{parentId}/kids")]
+        public async Task<ActionResult<List<Kid>>> GetKids(int parentId)
         {
+            var kids = await _parentService.GetParentKidsAsync(parentId);
+            return Ok(kids);
+        }
 
+        [HttpPut("{parentId}/kids/{kidId}")]
+        public async Task<IActionResult> AddKid(int parentId, string kidId)
+        {
+            var result = await _parentService.AddKidToParentAsync(parentId, kidId);
+            if (!result) return NotFound();
+            return Ok();
+        }
+
+        [HttpDelete("{parentId}/kids/{kidId}")]
+        public async Task<IActionResult> RemoveKid(int parentId, string kidId)
+        {
+            var result = await _parentService.RemoveKidFromParentAsync(parentId, kidId);
+            if (!result) return NotFound();
+            return NoContent();
         }
     }
 }

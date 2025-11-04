@@ -23,6 +23,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IKidService, KidService>();
+builder.Services.AddScoped<IKidTaskService, KidTaskService>();
 
 var app = builder.Build();
 

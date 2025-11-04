@@ -30,7 +30,7 @@ namespace ProjectApi.Models
         public bool IsRepetitive { get; set; } = false;
         public string RepeatDaysJson { get; set; } = "[]";
 
-        public Kid Kid { get; set; } = null!;
+        public Kid? Kid { get; set; }
 
         [NotMapped]
         public List<DayOfWeek> RepeatDays

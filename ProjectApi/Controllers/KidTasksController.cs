@@ -16,22 +16,22 @@ namespace ProjectApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Kid>>> GetKidTasks()
+        public async Task<ActionResult<List<KidTask>>> GetKidTasks()
         {
-            var kids = await _kidTaskService.GetAllKidTasksAsync();
-            return Ok(kids);
+            var kidTasks = await _kidTaskService.GetAllKidTasksAsync();
+            return Ok(kidTasks);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Kid>> GetKidTask(int id)
         {
-            var kid = await _kidTaskService.GetTaskByIdAsync(id);
-            if (kid == null) return NotFound();
-            return Ok(kid);
+            var kidTask = await _kidTaskService.GetTaskByIdAsync(id);
+            if (kidTask == null) return NotFound();
+            return Ok(kidTask);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateKid(int id, KidTask kidTask)
+        public async Task<IActionResult> UpdateKidTask(int id, KidTask kidTask)
         {
             var result = await _kidTaskService.UpdateTaskAsync(id, kidTask);
             if (!result) return NotFound();
@@ -39,11 +39,29 @@ namespace ProjectApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteKid(int id)
+        public async Task<IActionResult> DeleteKidTask(int id)
         {
             var result = await _kidTaskService.DeleteTaskAsync(id);
             if (!result) return NotFound();
             return NoContent();
+        }
+
+        [HttpPost("{kidId}")]
+        public async Task<ActionResult<KidTask>> CreateKidTask(string kidId, KidTask kidTask)
+        {
+            try
+            {
+                var createdKidTask = await _kidTaskService.CreateTaskAsync(kidId, kidTask);
+                return CreatedAtAction(
+                    nameof(GetKidTask),
+                    new { id = createdKidTask.Id },
+                    createdKidTask
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
