@@ -20,6 +20,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
+builder.Services.AddSingleton<IPasswordService, PasswordService>();  
+builder.Services.AddSingleton<IGeneratorIdService, GeneratorIdService>();
 
 builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IKidService, KidService>();

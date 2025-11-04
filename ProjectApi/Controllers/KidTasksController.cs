@@ -15,12 +15,12 @@ namespace ProjectApi.Controllers
             _kidTaskService = kidTaskService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<KidTask>>> GetKidTasks()
-        {
-            var kidTasks = await _kidTaskService.GetAllKidTasksAsync();
-            return Ok(kidTasks);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<List<KidTask>>> GetKidTasks()
+        //{
+        //    var kidTasks = await _kidTaskService.GetAllKidTasksAsync();
+        //    return Ok(kidTasks);
+        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Kid>> GetKidTask(int id)

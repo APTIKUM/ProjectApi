@@ -4,7 +4,7 @@ using ProjectApi.Services.Abstractions;
 
 namespace ProjectApi.Controllers
 {
-    [Route("api/parents")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ParentsController : ControllerBase
     {
@@ -15,15 +15,15 @@ namespace ProjectApi.Controllers
             _parentService = parentService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Parent>>> Get()
-        {
-            var parents = await _parentService.GetAllParentsAsync();
-            return Ok(parents);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Parent>>> GetParents()
+        //{
+        //    var parents = await _parentService.GetAllParentsAsync();
+        //    return Ok(parents);
+        //}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Parent>> Get(int id)
+        public async Task<ActionResult<Parent>> GetParent(int id)
         {
             var parent = await _parentService.GetParentByIdAsync(id);
             if (parent == null) return NotFound();
@@ -33,8 +33,9 @@ namespace ProjectApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Parent>> Create(Parent parent)
         {
+
             var createdParent = await _parentService.CreateParentAsync(parent);
-            return CreatedAtAction(nameof(Get), new { id = createdParent.Id }, createdParent);
+            return CreatedAtAction(nameof(GetParent), new { id = createdParent.Id }, createdParent);
         }
 
         [HttpPost("login")]
@@ -42,6 +43,7 @@ namespace ProjectApi.Controllers
         {
             var parent = await _parentService.LoginAsync(email, password);
             if (parent == null) return Unauthorized();
+
             return Ok(parent);
         }
 

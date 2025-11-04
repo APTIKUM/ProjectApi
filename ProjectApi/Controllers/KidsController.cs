@@ -16,12 +16,12 @@ namespace ProjectApi.Controllers
             _kidService = kidService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Kid>>> GetKids()
-        {
-            var kids = await _kidService.GetAllKidsAsync();
-            return Ok(kids);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<List<Kid>>> GetKids()
+        //{
+        //    var kids = await _kidService.GetAllKidsAsync();
+        //    return Ok(kids);
+        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Kid>> GetKid(string id)
@@ -64,5 +64,12 @@ namespace ProjectApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("{id}/tasks")]
+        public async Task<ActionResult<List<KidTask>>> GetKidTasks(string id)
+        {
+            var kidTasks = await _kidService.GetKidTasksAsync(id);
+            return Ok(kidTasks);
+        } 
     }
 }

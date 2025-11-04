@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectApi.Data;
-using ProjectApi.Helpers;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -9,9 +8,11 @@ namespace ProjectApi.Services.Implementations
     public class KidService : IKidService
     {
         private readonly AppDbContext _context;
+        private readonly IGeneratorIdService _generatorIdService;
 
-        public KidService(AppDbContext context)
+        public KidService(AppDbContext context, IGeneratorIdService generatorIdService)
         {
+            _generatorIdService = generatorIdService;
             _context = context;
         }
 
@@ -52,11 +53,11 @@ namespace ProjectApi.Services.Implementations
                 .FirstOrDefaultAsync(p => p.Id == parentId)
                 ?? throw new Exception("Родитель не найден");
 
-            kid.Id = IdGenerator.GenerateKidId();
+            kid.Id = _generatorIdService.GenerateKidId();
 
             while (await _context.Kids.FindAsync(kid.Id) != null)
             {
-                kid.Id = IdGenerator.GenerateKidId();
+                kid.Id = _generatorIdService.GenerateKidId();
             }
 
             _context.Kids.Add(kid);

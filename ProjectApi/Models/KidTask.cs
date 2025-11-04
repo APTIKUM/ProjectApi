@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ProjectApi.Models
 {
@@ -30,6 +31,7 @@ namespace ProjectApi.Models
         public bool IsRepetitive { get; set; } = false;
         public string RepeatDaysJson { get; set; } = "[]";
 
+        [JsonIgnore]
         public Kid? Kid { get; set; }
 
         [NotMapped]

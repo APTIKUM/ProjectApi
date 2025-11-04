@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectApi.Data;
-using ProjectApi.Helpers;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -9,10 +8,12 @@ namespace ProjectApi.Services.Implementations
     public class ParentService : IParentService
     {
         private readonly AppDbContext _context;
+        private readonly IPasswordService _passwordService;
 
-        public ParentService(AppDbContext context)
+        public ParentService(AppDbContext context, IPasswordService passwordService)
         {
             _context = context;
+            _passwordService = passwordService;
         }
 
         public async Task<IEnumerable<Parent>> GetAllParentsAsync()
@@ -24,6 +25,7 @@ namespace ProjectApi.Services.Implementations
         public async Task<Parent> CreateParentAsync(Parent parent)
         {
             parent.RegistrationDate = DateTime.UtcNow;
+            parent.Password = _passwordService.HashPassword(parent.Password);
 
             _context.Parents.Add(parent);
             await _context.SaveChangesAsync();
@@ -33,13 +35,15 @@ namespace ProjectApi.Services.Implementations
 
         public async Task<bool> UpdateParentAsync(int id, Parent parent)
         {
+            parent.Password = _passwordService.HashPassword(parent.Password);
+
             var existingParent = await GetParentByIdAsync(id);
 
             if (existingParent == null)
             {
                 return false;
             }
-
+            
             existingParent.Email = parent.Email;
             existingParent.Password = parent.Password;
             existingParent.Name = parent.Name;
@@ -66,8 +70,15 @@ namespace ProjectApi.Services.Implementations
 
         public async Task<Parent?> LoginAsync(string email, string password)
         {
-            return await _context.Parents
-                .FirstOrDefaultAsync(p => p.Email == email && p.Password == password);
+            var parent = await _context.Parents.FirstOrDefaultAsync(p => p.Email == email);
+
+            if (parent == null 
+                || !_passwordService.VerifyPassword(password, parent.Password))
+            {
+                return null;
+            }
+
+            return parent;
         }
 
         public async Task<List<Kid>> GetParentKidsAsync(int parentId)
@@ -76,8 +87,6 @@ namespace ProjectApi.Services.Implementations
                 .Where(k => k.Parents.Any(p => p.Id == parentId))
                 .ToListAsync();
         }
-
-        
 
         public async Task<bool> AddKidToParentAsync(int parentId, string kidId)
         {
