@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectApi.Data;
+using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -22,18 +23,18 @@ namespace ProjectApi.Services.Implementations
         public async Task<Kid?> GetKidByIdAsync(string id) 
             => await _context.Kids.FirstOrDefaultAsync(k => k.Id == id);
 
-        public async Task<bool> UpdateKidAsync(string id, Kid kid)
+        public async Task<Kid> UpdateKidAsync(string id, KidUpdateDto kidUpdate)
         {
             var existingKid = await _context.Kids.FindAsync(id);
-            if (existingKid == null) return false;
+            if (existingKid == null) return null;
 
-            existingKid.GameBalance = kid.GameBalance;
-            existingKid.AvatarUrl = kid.AvatarUrl;
-            existingKid.Name = kid.Name;
+            existingKid.GameBalance = kidUpdate.GameBalance ?? existingKid.GameBalance;
+            existingKid.AvatarUrl = kidUpdate.AvatarUrl ?? existingKid.AvatarUrl;
+            existingKid.Name = kidUpdate.Name ?? existingKid.Name;
 
 
             await _context.SaveChangesAsync();
-            return true;
+            return existingKid;
         }
 
         public async Task<bool> DeleteKidAsync(string id)

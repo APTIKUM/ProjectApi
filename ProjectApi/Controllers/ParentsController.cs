@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -48,18 +50,31 @@ namespace ProjectApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Parent parent)
+        public async Task<ActionResult<Parent>> Update(int id, ParentUpdateDto parentUpdate)
         {
-            var success = await _parentService.UpdateParentAsync(id, parent);
-            if (!success) return NotFound();
+            var parentUpdated = await _parentService.UpdateParentAsync(id, parentUpdate);
+            if (parentUpdated == null) return NotFound();
+
+            return Ok(parentUpdated);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> ChangePassword(int id, string currentPassword, string newPassword)
+        {
+            var success = await _parentService.ChangePassword(id, currentPassword, newPassword);
+            if (!success) return BadRequest();
+
             return NoContent();
         }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var success = await _parentService.DeleteParentAsync(id);
             if (!success) return NotFound();
+
             return NoContent();
         }
 

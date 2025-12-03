@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 using ProjectApi.Services.Implementations;
@@ -32,11 +33,11 @@ namespace ProjectApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateKid(string id, Kid kid)
+        public async Task<ActionResult<Kid>> UpdateKid(string id, KidUpdateDto kidUpdate)
         {
-            var result = await _kidService.UpdateKidAsync(id, kid);
-            if (!result) return NotFound();
-            return NoContent();
+            var kidUpdated = await _kidService.UpdateKidAsync(id, kidUpdate);
+            if (kidUpdated == null) return NotFound();
+            return Ok(kidUpdated);
         }
 
         [HttpDelete("{id}")]

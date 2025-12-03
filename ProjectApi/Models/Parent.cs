@@ -23,9 +23,9 @@ namespace ProjectApi.Models
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
         [StringLength(255)]
-        public string? AvatarUrl { get; set; }
+        public string? AvatarUrl { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public List<Kid> Kids { get; set; } = new List<Kid>();
+        public List<Kid> Kids { get; set; } = [];
     }
 }

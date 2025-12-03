@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectApi.Data;
+using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -33,25 +34,38 @@ namespace ProjectApi.Services.Implementations
             return parent;
         }
 
-        public async Task<bool> UpdateParentAsync(int id, Parent parent)
+        public async Task<bool> ChangePassword(int id,string currentPassword, string newPassword)
         {
-            parent.Password = _passwordService.HashPassword(parent.Password);
-
             var existingParent = await GetParentByIdAsync(id);
 
-            if (existingParent == null)
+            if (existingParent == null
+                || !_passwordService.VerifyPassword(currentPassword, existingParent.Password))
             {
                 return false;
             }
-            
-            existingParent.Email = parent.Email;
-            existingParent.Password = parent.Password;
-            existingParent.Name = parent.Name;
-            existingParent.AvatarUrl = parent.AvatarUrl;
+            existingParent.Password = _passwordService.HashPassword(newPassword);
+
 
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<Parent> UpdateParentAsync(int id, ParentUpdateDto updateParentDto)
+        {
+            var existingParent = await GetParentByIdAsync(id);
+
+            if (existingParent == null)
+            {
+                return null;
+            }
+            
+            existingParent.Name = updateParentDto.Name ?? existingParent.Name;
+            existingParent.AvatarUrl = updateParentDto.AvatarUrl ?? existingParent.AvatarUrl;
+
+            await _context.SaveChangesAsync();
+
+            return existingParent;
         }
 
         public async Task<bool> DeleteParentAsync(int id)

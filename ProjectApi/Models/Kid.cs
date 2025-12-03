@@ -10,6 +10,7 @@ namespace ProjectApi.Models
         public string Id { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(255)]
         public string Name { get; set; }
 
         public int GameBalance { get; set; }
