@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectApi.Data;
+using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
 
@@ -9,8 +10,11 @@ namespace ProjectApi.Services.Implementations
     {
         private readonly AppDbContext _context;
 
-        public KidTaskService(AppDbContext context)
+        private readonly IKidService _kidService;
+
+        public KidTaskService(AppDbContext context, IKidService kidService)
         {
+            _kidService = kidService;
             _context = context;
         }
 
@@ -36,28 +40,83 @@ namespace ProjectApi.Services.Implementations
             return task;
         }
 
-        public async Task<bool> UpdateTaskAsync(int taskId, KidTask task)
+        public async Task<KidTask> UpdateTaskAsync(int taskId, KidTaskUpdateDto task)
         {
-            var existingKidRask = await GetTaskByIdAsync(taskId);
+            var existingKidTask = await GetTaskByIdAsync(taskId);
 
-            if (existingKidRask == null)
+            if (existingKidTask == null)
             {
-                return false;
+                return null;
             }
 
-            existingKidRask.Title = task.Title;
-            existingKidRask.Price = task.Price;
-            existingKidRask.Description = task.Description;
-            existingKidRask.TimeStart = task.TimeStart;
-            existingKidRask.TimeEnd = task.TimeEnd;
-            existingKidRask.IsRepetitive = task.IsRepetitive;
-            existingKidRask.RepeatDaysJson = task.RepeatDaysJson;
-            existingKidRask.IsCompleted = task.IsCompleted;
+            existingKidTask.Title = task.Title ?? existingKidTask.Title;
+            existingKidTask.Price = task.Price ?? existingKidTask.Price;
+            existingKidTask.Description = task.Description ?? existingKidTask.Description;
+            existingKidTask.TimeStart = task.TimeStart ?? existingKidTask.TimeStart;
+            existingKidTask.TimeEnd = task.TimeEnd ?? existingKidTask.TimeEnd;
+            existingKidTask.IsRepetitive = task.IsRepetitive ?? existingKidTask.IsRepetitive;
+            existingKidTask.RepeatDaysJson = task.RepeatDaysJson ?? existingKidTask.RepeatDaysJson;
+            existingKidTask.CompletedDatesJson = task.CompletedDatesJson ?? existingKidTask.CompletedDatesJson;
+            //existingKidTask.IsCompleted = task.IsCompleted ?? existingKidTask.IsCompleted;
 
             await _context.SaveChangesAsync();
 
-            return true;
+            return existingKidTask;
         }
+
+        public async Task<KidTask> ChangeCompletedAsync(int taskId, bool isSetCompleted, DateOnly? date = null)
+        {
+            var kidTask = await GetTaskByIdAsync(taskId);
+
+            if (kidTask == null)
+            {
+                return null;
+            }
+
+            if (kidTask.IsRepetitive)
+            {
+                if (date == null)
+                {
+                    return null;
+                }
+
+                var dateOnly = (DateOnly)date;
+
+                var containsDate = kidTask.CompletedDates.Contains(dateOnly);
+
+                if (isSetCompleted == containsDate) return kidTask;
+
+                var completedDates = kidTask.CompletedDates;
+
+                if (isSetCompleted)
+                {
+                    completedDates.Add(dateOnly);
+                }    
+                else
+                {
+                    completedDates.Remove(dateOnly);
+                }
+
+                kidTask.CompletedDates = completedDates;
+
+            }
+            else
+            {
+                if (kidTask.IsCompleted == isSetCompleted)
+                {
+                    return kidTask;
+                }
+
+                kidTask.IsCompleted = isSetCompleted;
+            }
+
+            await _kidService.ChangeGameBalance(kidTask.KidId, isSetCompleted ? kidTask.Price : -kidTask.Price);
+            
+            await _context.SaveChangesAsync();
+            return kidTask;
+        }
+
+
 
         public async Task<bool> DeleteTaskAsync(int taskId)
         {

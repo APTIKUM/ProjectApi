@@ -2,7 +2,6 @@
 using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
-using ProjectApi.Services.Implementations;
 
 namespace ProjectApi.Controllers
 {
@@ -49,11 +48,11 @@ namespace ProjectApi.Controllers
         }
 
         [HttpPost("{parentId}")]
-        public async Task<ActionResult<Kid>> CreateKid(int parentId, Kid kid)
+        public async Task<ActionResult<Kid>> CreateKid(int parentId)
         {
             try
             {
-                var createdKid = await _kidService.CreateKidAsync(parentId, kid);
+                var createdKid = await _kidService.CreateKidAsync(parentId);
                 return CreatedAtAction(
                     nameof(GetKid),
                     new { id = createdKid.Id },

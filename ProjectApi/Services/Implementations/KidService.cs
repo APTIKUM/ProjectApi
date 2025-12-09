@@ -17,11 +17,11 @@ namespace ProjectApi.Services.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Kid>> GetAllKidsAsync() 
+        public async Task<IEnumerable<Kid>> GetAllKidsAsync()
             => await _context.Kids.ToListAsync();
 
-        public async Task<Kid?> GetKidByIdAsync(string id) 
-            => await _context.Kids.FirstOrDefaultAsync(k => k.Id == id);
+        public async Task<Kid?> GetKidByIdAsync(string id)
+            => await _context.Kids.FirstOrDefaultAsync(k => k.Id.ToUpper() == id.ToUpper());
 
         public async Task<Kid> UpdateKidAsync(string id, KidUpdateDto kidUpdate)
         {
@@ -47,14 +47,22 @@ namespace ProjectApi.Services.Implementations
             return true;
         }
 
-        public async Task<Kid> CreateKidAsync(int parentId, Kid kid)
+        public async Task<Kid> CreateKidAsync(int parentId)
         {
             var parent = await _context.Parents
                 .Include(p => p.Kids)
                 .FirstOrDefaultAsync(p => p.Id == parentId)
                 ?? throw new Exception("Родитель не найден");
 
-            kid.Id = _generatorIdService.GenerateKidId();
+            if (parent.Kids.Count >= 10)
+            {
+                throw new Exception("Купите резину");
+            }
+
+            var kid = new Kid
+            {
+                Id = _generatorIdService.GenerateKidId()
+            };
 
             while (await _context.Kids.FindAsync(kid.Id) != null)
             {
@@ -73,6 +81,21 @@ namespace ProjectApi.Services.Implementations
             return await _context.KidTasks
                 .Where(kt => kt.KidId == kidId)
                 .ToListAsync();
+        }
+
+        public async Task<Kid> ChangeGameBalance(string id, int profit)
+        {
+
+            var kid = await GetKidByIdAsync(id);
+
+            if (kid == null)
+            {
+                return null;
+            }
+
+            kid.GameBalance = Math.Max(0, profit + kid.GameBalance);
+
+            return kid;
         }
     }
 }

@@ -79,7 +79,12 @@ namespace ProjectApi.Data
                 entity.Property(e => e.TimeStart)
                     .IsRequired();
 
+                entity.Property(e => e.TimeEnd);
+
                 entity.Property(e => e.RepeatDaysJson)
+                    .HasDefaultValue("[]");
+
+                entity.Property(e => e.CompletedDatesJson)
                     .HasDefaultValue("[]");
 
                 entity.HasOne(kt => kt.Kid)

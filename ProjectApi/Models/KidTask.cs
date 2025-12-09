@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace ProjectApi.Models
 {
@@ -16,9 +17,8 @@ namespace ProjectApi.Models
         [StringLength(255)]
         public string Title { get; set; }
 
-        [Required]
         [StringLength(500)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         
         [Required]
         public int Price { get; set; }
@@ -30,15 +30,25 @@ namespace ProjectApi.Models
         public bool IsCompleted { get; set; } = false;
         public bool IsRepetitive { get; set; } = false;
         public string RepeatDaysJson { get; set; } = "[]";
+        public string CompletedDatesJson { get; set; } = "[]";
 
         [JsonIgnore]
         public Kid? Kid { get; set; }
 
+        [JsonIgnore]
         [NotMapped]
         public List<DayOfWeek> RepeatDays
         {
-            get => System.Text.Json.JsonSerializer.Deserialize<List<DayOfWeek>>(RepeatDaysJson ?? "[]") ?? new();
-            set => RepeatDaysJson = System.Text.Json.JsonSerializer.Serialize(value);
+            get => JsonSerializer.Deserialize<List<DayOfWeek>>(RepeatDaysJson ?? "[]") ?? [];
+            set => RepeatDaysJson = JsonSerializer.Serialize(value);
+        }
+
+        [JsonIgnore]
+        [NotMapped]
+        public List<DateOnly> CompletedDates
+        {
+            get => JsonSerializer.Deserialize<List<DateOnly>>(CompletedDatesJson) ?? [];
+            set => CompletedDatesJson = JsonSerializer.Serialize(value);
         }
     }
 }
