@@ -87,6 +87,10 @@ namespace ProjectApi.Data
                 entity.Property(e => e.CompletedDatesJson)
                     .HasDefaultValue("[]");
 
+                entity.Property(e => e.ImageUrl)
+                   .HasDefaultValue("")
+                   .HasMaxLength(255);
+
                 entity.HasOne(kt => kt.Kid)
                     .WithMany(k => k.Tasks)
                     .HasForeignKey(kt => kt.KidId)

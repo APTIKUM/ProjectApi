@@ -9,26 +9,26 @@ namespace ProjectApi.Models
     {
         public int Id { get; set; }
 
-        [Required]
         [StringLength(5)]
-        public string KidId { get; set; }
+        public string KidId { get; set; } = string.Empty;
 
-        [Required]
         [StringLength(255)]
-        public string Title { get; set; }
+        public string Title { get; set; } = "Новая задача";
 
         [StringLength(500)]
         public string Description { get; set; } = string.Empty;
-        
-        [Required]
-        public int Price { get; set; }
+
+        public int Price { get; set; } = 0;
 
         [Required]
         public DateTime TimeStart { get; set; }
+
         public DateTime? TimeEnd { get; set; }
 
+        [StringLength(255)]
+        public string ImageUrl { get; set; } = string.Empty;
         public bool IsCompleted { get; set; } = false;
-        public bool IsRepetitive { get; set; } = false;
+        public bool IsRepetitive => RepeatDays.Count > 0;
         public string RepeatDaysJson { get; set; } = "[]";
         public string CompletedDatesJson { get; set; } = "[]";
 

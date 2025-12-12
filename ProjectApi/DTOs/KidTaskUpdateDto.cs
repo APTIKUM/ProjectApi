@@ -16,8 +16,10 @@ namespace ProjectApi.DTOs
         public DateTime? TimeStart { get; set; }
         public DateTime? TimeEnd { get; set; }
         public bool? IsCompleted { get; set; }
-        public bool? IsRepetitive { get; set; }
         public string? RepeatDaysJson { get; set; }
         public string? CompletedDatesJson { get; set; }
+
+        [StringLength(255)]
+        public string? ImageUrl { get; set; }
     }
 }

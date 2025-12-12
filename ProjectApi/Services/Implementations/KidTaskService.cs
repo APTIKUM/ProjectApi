@@ -54,9 +54,9 @@ namespace ProjectApi.Services.Implementations
             existingKidTask.Description = task.Description ?? existingKidTask.Description;
             existingKidTask.TimeStart = task.TimeStart ?? existingKidTask.TimeStart;
             existingKidTask.TimeEnd = task.TimeEnd ?? existingKidTask.TimeEnd;
-            existingKidTask.IsRepetitive = task.IsRepetitive ?? existingKidTask.IsRepetitive;
             existingKidTask.RepeatDaysJson = task.RepeatDaysJson ?? existingKidTask.RepeatDaysJson;
             existingKidTask.CompletedDatesJson = task.CompletedDatesJson ?? existingKidTask.CompletedDatesJson;
+            existingKidTask.ImageUrl = task.ImageUrl ?? existingKidTask.ImageUrl;
             //existingKidTask.IsCompleted = task.IsCompleted ?? existingKidTask.IsCompleted;
 
             await _context.SaveChangesAsync();
