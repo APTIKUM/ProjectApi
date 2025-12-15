@@ -6,7 +6,7 @@ namespace ProjectApi.Services.Abstractions
     {
         Task<IEnumerable<Parent>> GetAllParentsAsync(); // will be removed
         Task<Parent?> GetParentByIdAsync(int id);
-        Task<Parent> CreateParentAsync(Parent parent);
+        Task<Parent> RegisterParentAsync(ParentRegisterDto parent);
         Task<Parent> UpdateParentAsync(int id, ParentUpdateDto parent);
         Task<bool> DeleteParentAsync(int id);
         Task<Parent?> LoginAsync(string email, string password);

@@ -33,10 +33,9 @@ namespace ProjectApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Parent>> Create(Parent parent)
+        public async Task<ActionResult<Parent>> Register(ParentRegisterDto parent)
         {
-
-            var createdParent = await _parentService.CreateParentAsync(parent);
+            var createdParent = await _parentService.RegisterParentAsync(parent);
             return CreatedAtAction(nameof(GetParent), new { id = createdParent.Id }, createdParent);
         }
 

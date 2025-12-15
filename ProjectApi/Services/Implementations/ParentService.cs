@@ -23,15 +23,13 @@ namespace ProjectApi.Services.Implementations
         public async Task<Parent?> GetParentByIdAsync(int id)
             => await _context.Parents.FindAsync(id);
 
-        public async Task<Parent> CreateParentAsync(Parent parent)
+        public async Task<Parent> RegisterParentAsync(ParentRegisterDto parent)
         {
-            parent.RegistrationDate = DateTime.UtcNow;
-            parent.Password = _passwordService.HashPassword(parent.Password);
-
-            _context.Parents.Add(parent);
+            var newParent = new Parent { Email = parent.Email, Password = _passwordService.HashPassword(parent.Password) };
+            _context.Parents.Add(newParent);
             await _context.SaveChangesAsync();
 
-            return parent;
+            return newParent;
         }
 
         public async Task<bool> ChangePassword(int id,string currentPassword, string newPassword)
