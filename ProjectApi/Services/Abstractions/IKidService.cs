@@ -6,7 +6,7 @@ namespace ProjectApi.Services.Abstractions
     public interface IKidService
     {
         Task<IEnumerable<Kid>> GetAllKidsAsync();
-        Task<Kid?> GetKidByIdAsync(string id);
+        Task<Kid?> GetKidByIdAsync(string id, string deviceToken = "");
         Task<Kid> CreateKidAsync(int parentId);
         Task<Kid> UpdateKidAsync(string id, KidUpdateDto kid);
         Task<bool> DeleteKidAsync(string id);

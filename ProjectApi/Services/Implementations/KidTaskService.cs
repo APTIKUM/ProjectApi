@@ -3,6 +3,8 @@ using ProjectApi.Data;
 using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 
 namespace ProjectApi.Services.Implementations
 {
@@ -10,12 +12,15 @@ namespace ProjectApi.Services.Implementations
     {
         private readonly AppDbContext _context;
 
+        private readonly IPushNotificationService _pushNotificationService;
+
         private readonly IKidService _kidService;
 
-        public KidTaskService(AppDbContext context, IKidService kidService)
+        public KidTaskService(AppDbContext context, IKidService kidService, IPushNotificationService pushNotificationService)
         {
             _kidService = kidService;
             _context = context;
+            _pushNotificationService = pushNotificationService;
         }
 
         public async Task<IEnumerable<KidTask>> GetAllKidTasksAsync() 
@@ -26,14 +31,13 @@ namespace ProjectApi.Services.Implementations
 
         public async Task<KidTask> CreateTaskAsync(string kidId, KidTask task)
         {
-            var kid = await _context.Kids
-                        .Include(k => k.Tasks)
-                        .FirstOrDefaultAsync(k => k.Id == kidId)
-                        ?? throw new Exception("Ребенок не найден");
+            var kid = await _kidService.GetKidByIdAsync(kidId) ?? throw new Exception("Ребенок не найден");
 
             task.KidId = kidId;
 
             _context.KidTasks.Add(task);
+
+            await _pushNotificationService.SendPushAsync(kid.DeviceToken, "Новая задача!", task.Title);
 
             await _context.SaveChangesAsync();
 
@@ -60,6 +64,10 @@ namespace ProjectApi.Services.Implementations
             //existingKidTask.IsCompleted = task.IsCompleted ?? existingKidTask.IsCompleted;
 
             await _context.SaveChangesAsync();
+
+            var kid = await _kidService.GetKidByIdAsync(existingKidTask.KidId) ?? throw new Exception("Ребенок не найден");
+
+            await _pushNotificationService.SendPushAsync(kid.DeviceToken, "Задача обновлена!", existingKidTask.Title);
 
             return existingKidTask;
         }
@@ -113,6 +121,23 @@ namespace ProjectApi.Services.Implementations
             await _kidService.ChangeGameBalance(kidTask.KidId, isSetCompleted ? kidTask.Price : -kidTask.Price);
             
             await _context.SaveChangesAsync();
+
+            var kidWithParents = await _context.Kids
+                .Include(k => k.Parents) // загружаем всех родителей
+                .FirstOrDefaultAsync(k => k.Id == kidTask.KidId);
+
+            if (kidWithParents != null)
+            {
+                var parents = kidWithParents.Parents; // тут уже все родители
+            }
+            var pushTitle = $"{kidWithParents.Name} " + (isSetCompleted ? "выполнил задачу!" : "отменил выполнение задачи!");
+            var pushText = $"{kidTask.Title}";
+
+            foreach (var parent in kidWithParents.Parents)
+            {
+                await _pushNotificationService.SendPushAsync(parent.DeviceToken, pushTitle, pushText);
+            }
+            
             return kidTask;
         }
 

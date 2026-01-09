@@ -40,9 +40,9 @@ namespace ProjectApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<Parent>> Login(string email, string password)
+        public async Task<ActionResult<Parent>> Login(string email, string password, string deviceToken = "")
         {
-            var parent = await _parentService.LoginAsync(email, password);
+            var parent = await _parentService.LoginAsync(email, password, deviceToken);
             if (parent == null) return Unauthorized();
 
             return Ok(parent);

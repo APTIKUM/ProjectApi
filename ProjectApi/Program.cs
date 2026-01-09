@@ -26,6 +26,8 @@ builder.Services.AddSingleton<IGeneratorIdService, GeneratorIdService>();
 builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IKidService, KidService>();
 builder.Services.AddScoped<IKidTaskService, KidTaskService>();
+builder.Services.AddHttpClient<IPushNotificationService, PushNotificationService>();
+
 
 var app = builder.Build();
 

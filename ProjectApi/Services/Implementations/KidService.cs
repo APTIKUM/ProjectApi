@@ -20,8 +20,24 @@ namespace ProjectApi.Services.Implementations
         public async Task<IEnumerable<Kid>> GetAllKidsAsync()
             => await _context.Kids.ToListAsync();
 
-        public async Task<Kid?> GetKidByIdAsync(string id)
-            => await _context.Kids.FirstOrDefaultAsync(k => k.Id.ToUpper() == id.ToUpper());
+        public async Task<Kid?> GetKidByIdAsync(string id, string deviceToken = "")
+        {
+            var kid = await _context.Kids.FirstOrDefaultAsync(k => k.Id.ToUpper() == id.ToUpper());
+
+            if (kid == null)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(deviceToken) && kid.DeviceToken != deviceToken)
+            {
+                kid.DeviceToken = deviceToken;
+                await _context.SaveChangesAsync();
+            }
+
+            return kid;
+        }
+            
 
         public async Task<Kid> UpdateKidAsync(string id, KidUpdateDto kidUpdate)
         {

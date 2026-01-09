@@ -80,7 +80,7 @@ namespace ProjectApi.Services.Implementations
             return true;
         }
 
-        public async Task<Parent?> LoginAsync(string email, string password)
+        public async Task<Parent?> LoginAsync(string email, string password, string deviceToken = "")
         {
             var parent = await _context.Parents.FirstOrDefaultAsync(p => p.Email == email);
 
@@ -89,6 +89,9 @@ namespace ProjectApi.Services.Implementations
             {
                 return null;
             }
+
+            parent.DeviceToken = deviceToken;
+            await _context.SaveChangesAsync();
 
             return parent;
         }

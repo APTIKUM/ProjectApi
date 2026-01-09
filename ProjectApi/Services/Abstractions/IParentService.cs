@@ -9,7 +9,7 @@ namespace ProjectApi.Services.Abstractions
         Task<Parent> RegisterParentAsync(ParentRegisterDto parent);
         Task<Parent> UpdateParentAsync(int id, ParentUpdateDto parent);
         Task<bool> DeleteParentAsync(int id);
-        Task<Parent?> LoginAsync(string email, string password);
+        Task<Parent?> LoginAsync(string email, string password, string deviceToken = "");
 
         Task<bool> ChangePassword(int id, string currentPassword, string newPassword);
 

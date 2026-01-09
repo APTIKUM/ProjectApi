@@ -22,9 +22,13 @@ namespace ProjectApi.Models
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
         [StringLength(255)]
-        public string? AvatarUrl { get; set; } = string.Empty;
+        public string AvatarUrl { get; set; } = string.Empty;
 
         [JsonIgnore]
         public List<Kid> Kids { get; set; } = [];
+
+        [JsonIgnore]
+        [StringLength(255)]
+        public string DeviceToken { get; set; } = string.Empty;
     }
 }
