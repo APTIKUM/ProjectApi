@@ -36,7 +36,7 @@ namespace ProjectApi.Services.Implementations
             _context.KidTasks.Add(task);
             await _context.SaveChangesAsync();
 
-
+            
             await _pushNotificationService.SendPushAsync(kid.DeviceToken, "Новая задача!", task.Title);
 
 

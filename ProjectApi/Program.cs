@@ -4,8 +4,9 @@ using ProjectApi.Services.Abstractions;
 using ProjectApi.Services.Implementations;
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
+DotNetEnv.Env.Load();
 
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -51,7 +52,5 @@ using (var scope = app.Services.CreateScope())
 
     dbContext.Database.Migrate();
 }
-
-Console.WriteLine("Database created successfully!");
 
 app.Run();

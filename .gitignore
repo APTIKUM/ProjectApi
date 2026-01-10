@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 # FirebaseKey
 sparkly-firebase-key.json
+
+.env
