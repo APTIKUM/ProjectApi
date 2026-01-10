@@ -15,7 +15,7 @@ namespace ProjectApi.Services.Implementations
         {
             _context = context;
             _passwordService = passwordService;
-        }
+        } 
 
         public async Task<IEnumerable<Parent>> GetAllParentsAsync()
             => await _context.Parents.ToListAsync();
@@ -32,7 +32,7 @@ namespace ProjectApi.Services.Implementations
             return newParent;
         }
 
-        public async Task<bool> ChangePassword(int id,string currentPassword, string newPassword)
+        public async Task<bool> ChangePassword(int id, string currentPassword, string newPassword)
         {
             var existingParent = await GetParentByIdAsync(id);
 
@@ -41,6 +41,7 @@ namespace ProjectApi.Services.Implementations
             {
                 return false;
             }
+
             existingParent.Password = _passwordService.HashPassword(newPassword);
 
 
@@ -60,6 +61,7 @@ namespace ProjectApi.Services.Implementations
             
             existingParent.Name = updateParentDto.Name ?? existingParent.Name;
             existingParent.AvatarUrl = updateParentDto.AvatarUrl ?? existingParent.AvatarUrl;
+            existingParent.DeviceToken = updateParentDto.DeviceToken ?? existingParent.DeviceToken;
 
             await _context.SaveChangesAsync();
 
@@ -80,7 +82,7 @@ namespace ProjectApi.Services.Implementations
             return true;
         }
 
-        public async Task<Parent?> LoginAsync(string email, string password, string deviceToken = "")
+        public async Task<Parent?> LoginAsync(string email, string password)
         {
             var parent = await _context.Parents.FirstOrDefaultAsync(p => p.Email == email);
 
@@ -90,10 +92,12 @@ namespace ProjectApi.Services.Implementations
                 return null;
             }
 
-            parent.DeviceToken = deviceToken;
-            await _context.SaveChangesAsync();
-
             return parent;
+        }
+
+        public async Task<bool> RefreshDeviceToken(int id, string deviceToken)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<Kid>> GetParentKidsAsync(int parentId)

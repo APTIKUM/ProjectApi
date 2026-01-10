@@ -3,8 +3,6 @@ using ProjectApi.Data;
 using ProjectApi.DTOs;
 using ProjectApi.Models;
 using ProjectApi.Services.Abstractions;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography;
 
 namespace ProjectApi.Services.Implementations
 {
@@ -140,8 +138,6 @@ namespace ProjectApi.Services.Implementations
             
             return kidTask;
         }
-
-
 
         public async Task<bool> DeleteTaskAsync(int taskId)
         {

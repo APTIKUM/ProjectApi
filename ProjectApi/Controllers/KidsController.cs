@@ -24,10 +24,11 @@ namespace ProjectApi.Controllers
         //}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Kid>> GetKid(string id, string deviceToken = "")
+        public async Task<ActionResult<Kid>> GetKid(string id)
         {
-            var kid = await _kidService.GetKidByIdAsync(id, deviceToken);
+            var kid = await _kidService.GetKidByIdAsync(id);
             if (kid == null) return NotFound();
+
             return Ok(kid);
         }
 

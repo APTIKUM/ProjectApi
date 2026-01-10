@@ -11,5 +11,8 @@ namespace ProjectApi.DTOs
 
         [StringLength(255)]
         public string? AvatarUrl { get; set; }
+
+        [StringLength(255)]
+        public string? DeviceToken { get; set; }
     }
 }
