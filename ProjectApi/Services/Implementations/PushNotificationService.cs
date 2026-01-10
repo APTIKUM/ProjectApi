@@ -8,16 +8,15 @@ namespace ProjectApi.Services.Implementations
 {
     public class PushNotificationService : IPushNotificationService
     {
-        private const string FirebaseScope =
-            "https://www.googleapis.com/auth/firebase.messaging";
+        private const string FirebaseScope = "https://www.googleapis.com/auth/firebase.messaging";
 
         private const string FirebaseProjectId = "sparkly-8cdd0";
 
-        private static readonly string FcmUrl =
+        private static readonly string FcmUrl = 
             $"https://fcm.googleapis.com/v1/projects/{FirebaseProjectId}/messages:send";
 
-        private readonly string _serviceAccountPath =
-            @"..\sparkly-firebase-key.json";
+        private readonly string _serviceAccountPath = 
+            Path.Combine(AppContext.BaseDirectory, "sparkly-firebase-key.json");
 
         private readonly HttpClient _httpClient;
 
@@ -59,6 +58,8 @@ namespace ProjectApi.Services.Implementations
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
+            Console.WriteLine($"{_serviceAccountPath}");
+            Console.WriteLine($"token {deviceToken}");
             Console.WriteLine("FCM response: " + responseContent);
 
             return response.IsSuccessStatusCode;

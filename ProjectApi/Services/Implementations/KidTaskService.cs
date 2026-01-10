@@ -34,10 +34,11 @@ namespace ProjectApi.Services.Implementations
             task.KidId = kidId;
 
             _context.KidTasks.Add(task);
+            await _context.SaveChangesAsync();
+
 
             await _pushNotificationService.SendPushAsync(kid.DeviceToken, "Новая задача!", task.Title);
 
-            await _context.SaveChangesAsync();
 
             return task;
         }
