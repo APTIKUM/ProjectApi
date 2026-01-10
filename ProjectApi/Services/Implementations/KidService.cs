@@ -21,7 +21,10 @@ namespace ProjectApi.Services.Implementations
             => await _context.Kids.ToListAsync();
 
         public async Task<Kid?> GetKidByIdAsync(string id)
-            => await _context.Kids.FirstOrDefaultAsync(k => k.Id.ToUpper() == id.ToUpper());
+        {
+            return await _context.Kids.FirstOrDefaultAsync(k => k.Id.ToUpper() == id.ToUpper());
+        }
+            
 
         public async Task<Kid> UpdateKidAsync(string id, KidUpdateDto kidUpdate)
         {
@@ -31,7 +34,7 @@ namespace ProjectApi.Services.Implementations
             existingKid.GameBalance = kidUpdate.GameBalance ?? existingKid.GameBalance;
             existingKid.AvatarUrl = kidUpdate.AvatarUrl ?? existingKid.AvatarUrl;
             existingKid.Name = kidUpdate.Name ?? existingKid.Name;
-
+            existingKid.DeviceToken = kidUpdate.DeviceToken ?? existingKid.DeviceToken;
 
             await _context.SaveChangesAsync();
             return existingKid;

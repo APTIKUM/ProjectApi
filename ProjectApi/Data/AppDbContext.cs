@@ -32,6 +32,9 @@ namespace ProjectApi.Data
                 entity.Property(e => e.AvatarUrl)
                     .HasMaxLength(255);
 
+                entity.Property(e => e.DeviceToken)
+                      .HasMaxLength(255);
+
                 entity.Property(e => e.RegistrationDate)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
@@ -57,6 +60,9 @@ namespace ProjectApi.Data
 
                 entity.Property(e => e.GameBalance)
                     .HasDefaultValue(0);
+
+                entity.Property(e => e.DeviceToken)
+                    .HasMaxLength(255);
             });
 
             

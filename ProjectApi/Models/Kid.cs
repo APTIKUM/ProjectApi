@@ -15,13 +15,17 @@ namespace ProjectApi.Models
         public int GameBalance { get; set; } = 0;
 
         [StringLength(255)]
-        public string? AvatarUrl { get; set; } = string.Empty;
+        public string AvatarUrl { get; set; } = string.Empty;
 
         [JsonIgnore]
         public List<Parent> Parents { get; set; } = [];
 
         [JsonIgnore]
         public List<KidTask> Tasks { get; set; } = [];
+
+        [JsonIgnore]
+        [StringLength(255)]
+        public string DeviceToken { get; set; } = string.Empty;
     }
 
 }

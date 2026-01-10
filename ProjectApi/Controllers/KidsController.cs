@@ -28,6 +28,7 @@ namespace ProjectApi.Controllers
         {
             var kid = await _kidService.GetKidByIdAsync(id);
             if (kid == null) return NotFound();
+
             return Ok(kid);
         }
 
